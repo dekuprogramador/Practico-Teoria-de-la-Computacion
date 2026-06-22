@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1778877527 source:c:\users\maxi\desktop\facultad\cuarto año\teoria de la computación\thomson\practicothomson\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+

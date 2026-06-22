@@ -1,0 +1,11 @@
+digraph AFD {
+    rankdir=LR;
+    node [fixedsize=true, width=0.6, height=0.6];
+    inic [shape=point, height=0.05, label=""];
+    inic -> U0;
+    U0 [shape=circle];
+    U1 [shape=circle];
+    U2 [shape=doublecircle];
+    U0 -> U1 [label="a"];
+    U1 -> U2 [label="b"];
+}

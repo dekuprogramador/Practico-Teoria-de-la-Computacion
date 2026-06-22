@@ -1,0 +1,38 @@
+digraph ArbolSintactico {
+    node [fontname="Arial"];
+    n0 [label="E"];
+    n0 -> n1;
+    n1 [label="T"];
+    n1 -> n2;
+    n2 [label="F"];
+    n2 -> n3;
+    n3 [label="P"];
+    n3 -> n4;
+    n4 [label="a"];
+    n2 -> n5;
+    n5 [label="F'"];
+    n5 -> n6;
+    n6 [label="$"];
+    n1 -> n7;
+    n7 [label="T'"];
+    n7 -> n8;
+    n8 [label="."];
+    n7 -> n9;
+    n9 [label="F"];
+    n9 -> n10;
+    n10 [label="P"];
+    n10 -> n11;
+    n11 [label="b"];
+    n9 -> n12;
+    n12 [label="F'"];
+    n12 -> n13;
+    n13 [label="$"];
+    n7 -> n14;
+    n14 [label="T'"];
+    n14 -> n15;
+    n15 [label="$"];
+    n0 -> n16;
+    n16 [label="E'"];
+    n16 -> n17;
+    n17 [label="$"];
+}

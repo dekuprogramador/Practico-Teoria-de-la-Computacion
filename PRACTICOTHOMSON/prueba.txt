@@ -1,0 +1,10 @@
+a
+b
+ab
+aab
+abababb
+aaaa
+sixseven
+bb
+abb
+aaaaaaaaabb
