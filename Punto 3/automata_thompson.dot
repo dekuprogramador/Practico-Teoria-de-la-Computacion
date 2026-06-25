@@ -2,18 +2,8 @@ digraph G {
     rankdir=LR;
     node [fixedsize=true, width=0.6, height=0.6];
     inic [shape= point, height=0.05, label=""];
-    inic -> q2;
-    q2 [shape=circle];
-    q2 -> q3 [label="E"];
-    q3 [shape=circle];
-    q3 -> q4 [label="E"];
-    q4 [shape=circle];
-    q4 -> q5 [label="b"];
-    q5 [shape=doublecircle];
-    q2 -> q0 [label="E"];
+    inic -> q0;
     q0 [shape=circle];
     q0 -> q1 [label="a"];
-    q1 [shape=circle];
-    q1 -> q3 [label="E"];
-    q1 -> q0 [label="E"];
+    q1 [shape=doublecircle];
 }

@@ -2,21 +2,18 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-// Definicion de los tipos de nodos para mayor claridad
 typedef enum {
-    OPERAND,   // Hojas: a-z, 0-9, o 'E'
-    OPERATOR   // Nodos internos: '|', '.', '*'
+    OPERAND,
+    OPERATOR
 } NodeType;
 
-// Estructura del nodo del arbol binario
 typedef struct RegexNode {
     NodeType type;
-    char value;                 // Guarda el caracter del operador o del operando
-    struct RegexNode* left;     // Hijo izquierdo
-    struct RegexNode* right;    // Hijo derecho (NULL si es unario o si es una hoja)
+    char value;                 
+    struct RegexNode* left;     
+    struct RegexNode* right;    
 } RegexNode;
 
-// Funcion para crear un nodo de tipo operando (hoja)
 RegexNode* createOperandNode(char value) {
     RegexNode* newNode = (RegexNode*)malloc(sizeof(RegexNode));
     if (!newNode) {
@@ -30,7 +27,6 @@ RegexNode* createOperandNode(char value) {
     return newNode;
 }
 
-// Funcion para crear un nodo de tipo operador
 RegexNode* createOperatorNode(char operator, RegexNode* left, RegexNode* right) {
     RegexNode* newNode = (RegexNode*)malloc(sizeof(RegexNode));
     if (!newNode) {
@@ -41,7 +37,6 @@ RegexNode* createOperatorNode(char operator, RegexNode* left, RegexNode* right) 
     newNode->value = operator;
     newNode->left = left;
     
-    // Si es la clausura de Kleene (*), es un operador unario, el hijo derecho debe ser NULL
     if (operator == '*') {
         newNode->right = NULL;
     } else {
@@ -51,12 +46,10 @@ RegexNode* createOperatorNode(char operator, RegexNode* left, RegexNode* right) 
     return newNode;
 }
 
-// Funcion auxiliar para imprimir el arbol en formato infijo (para verificar la estructura)
 void printExpression(RegexNode* root) {
     if (root == NULL) return;
 
     if (root->type == OPERATOR) {
-        // Si no es unario (*), abrimos parentesis para mantener el orden visual
         if (root->value != '*') printf("(");
         
         printExpression(root->left);
@@ -65,12 +58,10 @@ void printExpression(RegexNode* root) {
         
         if (root->value != '*') printf(")");
     } else {
-        // Es un operando
         printf("%c", root->value);
     }
 }
 
-// Funcion para liberar la memoria del arbol
 void freeTree(RegexNode* root) {
     if (root == NULL) return;
     freeTree(root->left);
@@ -81,27 +72,19 @@ void freeTree(RegexNode* root) {
 int main() {
     printf("--- Arbol Binario para Expresiones Regulares ---\n\n");
 
-    // Ejemplo: Representar la expresion regular: (a|b).c*
-    // Construccion de abajo hacia arriba (Bottom-up):
-    
-    // 1. Subarbol para (a|b)
     RegexNode* nodeA = createOperandNode('a');
     RegexNode* nodeB = createOperandNode('b');
     RegexNode* unionNode = createOperatorNode('|', nodeA, nodeB);
 
-    // 2. Subarbol para c*
     RegexNode* nodeC = createOperandNode('c');
     RegexNode* starNode = createOperatorNode('*', nodeC, NULL);
 
-    // 3. Nodo raiz: concatenacion de ambos subarboles
     RegexNode* root = createOperatorNode('.', unionNode, starNode);
 
-    // Mostrar la expresion resultante recorriendo el arbol
     printf("Expresion generada recorriendo el arbol: ");
     printExpression(root);
     printf("\n");
 
-    // Ejemplo con lambda (E) -> E.a
     RegexNode* lambdaNode = createOperandNode('E');
     RegexNode* nodeA2 = createOperandNode('a');
     RegexNode* root2 = createOperatorNode('.', lambdaNode, nodeA2);

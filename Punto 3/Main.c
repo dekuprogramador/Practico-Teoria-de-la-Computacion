@@ -194,10 +194,9 @@ void generar_archivo_dot(Estado *inicio, const char *nombre_archivo) {
 
     fprintf(archivo, "}\n");
     fclose(archivo);
-    printf("\n¡Archivo grafico '%s' generado exitosamente!\n", nombre_archivo);
+    printf("\nArchivo grafico '%s' generado exitosamente!\n", nombre_archivo);
 }
 
-// Libera de forma recursiva los estados y la lista enlazada de transiciones
 void liberar_automata(Estado *e, int *visitado) {
     if (e == NULL || visitado[e->id]) return;
     visitado[e->id] = 1;
@@ -205,11 +204,11 @@ void liberar_automata(Estado *e, int *visitado) {
     Transicion *actual = e->transiciones;
     while (actual != NULL) {
         Transicion *siguiente = actual->siguiente;
-        liberar_automata(actual->destino, visitado); // Llamada recursiva al destino
-        free(actual);                                // Libera la estructura de la transicion
+        liberar_automata(actual->destino, visitado);
+        free(actual);
         actual = siguiente;
     }
-    free(e); // Libera el estado propiamente dicho
+    free(e);
 }
 
 int main() {
@@ -268,7 +267,6 @@ int main() {
         }
     } while (op != 0);
 
-    // LIBERACION DE MEMORIA: Se ejecuta al presionar 0 para limpiar los recursos
     printf("\nLiberando memoria del automata...\n");
     int visitados_liberar[1000] = {0};
     liberar_automata(seleccionado.inicio, visitados_liberar);

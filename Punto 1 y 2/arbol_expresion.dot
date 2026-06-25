@@ -1,0 +1,16 @@
+digraph G {
+    label="Arbol de Expresion Regular (a.b|a.b*)";
+    labelloc="t";
+    node [fontname="Arial", fontsize=12];
+    N1772030401776 [label=".", shape="ellipse"];
+    N1772030401776 -> N1772030401616;
+    N1772030401616 [label="|", shape="ellipse"];
+    N1772030401616 -> N1772030401680;
+    N1772030401680 [label="a", shape="ellipse"];
+    N1772030401616 -> N1772030401552;
+    N1772030401552 [label="b", shape="ellipse"];
+    N1772030401776 -> N1772030401648;
+    N1772030401648 [label="*", shape="ellipse"];
+    N1772030401648 -> N1772030401456;
+    N1772030401456 [label="c", shape="ellipse"];
+}

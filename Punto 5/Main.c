@@ -6,7 +6,6 @@
 #define MAX_ESTADOS_AFD 100
 #define MAX_ESTADOS_AFN 1000
 
-// --- Estructuras Originales del AFN ---
 typedef struct Estado Estado;
 typedef struct Transicion {
     char simbolo;
@@ -25,7 +24,6 @@ typedef struct {
     Estado *fin;
 } Fragmento;
 
-// --- Estructuras para la Construcción del AFD ---
 typedef struct {
     int estados_afn[MAX_ESTADOS_AFN];
     int tam;
@@ -42,7 +40,6 @@ typedef struct {
 
 int contador_estados = 0;
 
-// --- Funciones Base de tu Codigo ---
 Estado* crear_estado(int esFinal) {
     Estado *e = (Estado*)malloc(sizeof(Estado));
     e->id = contador_estados++;
@@ -143,7 +140,6 @@ Fragmento parser_thompson(char *regex) {
     return pila_frag[0];
 }
 
-// --- Funciones Auxiliares de Ordenamiento para Conjuntos ---
 void ordenar_conjunto(int *conjunto, int tam) {
     for (int i = 0; i < tam - 1; i++) {
         for (int j = i + 1; j < tam; j++) {
@@ -166,7 +162,6 @@ int agregar_al_conjunto(int *conjunto, int *tam, int id) {
     return 1;
 }
 
-// Busca punteros a estructuras Estado del AFN por medio de su ID numérico
 Estado* buscar_estado_afn(Estado *actual, int id, int *visitado) {
     if (actual == NULL || visitado[actual->id]) return NULL;
     if (actual->id == id) return actual;
@@ -183,8 +178,6 @@ Estado* obtener_estado_por_id(Estado *raiz, int id) {
     int visitados[1000] = {0};
     return buscar_estado_afn(raiz, id, visitados);
 }
-
-// --- Operaciones del Algoritmo de Subconjuntos ---
 
 void epsilon_clausura_recursiva(Estado *e, int *conjunto, int *tam) {
     if (e == NULL) return;
@@ -233,7 +226,6 @@ int comparar_subconjuntos(Subconjunto a, Subconjunto b) {
     return 1;
 }
 
-// --- Obtencion del Alfabeto ---
 void extraer_alfabeto(Estado *e, int *visitado, char *alfabeto, int *tam_alfa) {
     if (e == NULL || visitado[e->id]) return;
     visitado[e->id] = 1;
@@ -253,7 +245,6 @@ void extraer_alfabeto(Estado *e, int *visitado, char *alfabeto, int *tam_alfa) {
     }
 }
 
-// --- Exportador DOT para el AFD ---
 void generar_dot_afd(Subconjunto *estados_afd, int cont_afd, TransicionAFD *trans_afd, int cont_trans, const char *nombre_archivo) {
     FILE *archivo = fopen(nombre_archivo, "w");
     if (!archivo) return;
@@ -262,7 +253,7 @@ void generar_dot_afd(Subconjunto *estados_afd, int cont_afd, TransicionAFD *tran
     fprintf(archivo, "    rankdir=LR;\n");
     fprintf(archivo, "    node [fixedsize=true, width=0.6, height=0.6];\n");
     fprintf(archivo, "    inic [shape=point, height=0.05, label=\"\"];\n");
-    fprintf(archivo, "    inic -> U0;\n"); // Estado inicial siempre es U0
+    fprintf(archivo, "    inic -> U0;\n");
 
     for (int i = 0; i < cont_afd; i++) {
         if (estados_afd[i].es_final_afd) {
@@ -294,7 +285,6 @@ void liberar_automata(Estado *e, int *visitado) {
     free(e);
 }
 
-// --- Algoritmo de conversion AFN a AFD ---
 void convertir_afn_a_afd(Estado *inicio_afn, int id_final_afn) {
     Subconjunto estados_afd[MAX_ESTADOS_AFD];
     int contador_afd = 0;
@@ -307,7 +297,6 @@ void convertir_afn_a_afd(Estado *inicio_afn, int id_final_afn) {
     int visitados_alfa[1000] = {0};
     extraer_alfabeto(inicio_afn, visitados_alfa, alfabeto, &tam_alfabeto);
 
-    // 1. Crear el primer subconjunto: E-clausura(inicio)
     Subconjunto inicial;
     inicial.tam = 0;
     agregar_al_conjunto(inicial.estados_afn, &inicial.tam, inicio_afn->id);
@@ -321,7 +310,6 @@ void convertir_afn_a_afd(Estado *inicio_afn, int id_final_afn) {
     }
     estados_afd[0] = inicial;
 
-    // 2. Ciclo principal del Algoritmo de Subconjuntos
     int pendientes = 1;
     while (pendientes) {
         int index_marcar = -1;
@@ -339,7 +327,6 @@ void convertir_afn_a_afd(Estado *inicio_afn, int id_final_afn) {
 
         estados_afd[index_marcar].marcado = 1;
 
-        // Evaluar para cada simbolo del alfabeto conocido
         for (int a = 0; a < tam_alfabeto; a++) {
             Subconjunto aux_mover;
             mover(estados_afd[index_marcar], alfabeto[a], &aux_mover, inicio_afn);
@@ -347,7 +334,6 @@ void convertir_afn_a_afd(Estado *inicio_afn, int id_final_afn) {
             if (aux_mover.tam > 0) {
                 epsilon_clausura(&aux_mover, inicio_afn);
 
-                // Verificar si este subconjunto ya existe en el AFD
                 int existe_idx = -1;
                 for (int e = 0; e < contador_afd; e++) {
                     if (comparar_subconjuntos(estados_afd[e], aux_mover)) {
@@ -358,7 +344,6 @@ void convertir_afn_a_afd(Estado *inicio_afn, int id_final_afn) {
 
                 int destino_id;
                 if (existe_idx == -1) {
-                    // Es un nuevo estado mapeado en el AFD
                     aux_mover.id_afd = contador_afd;
                     aux_mover.marcado = 0;
                     aux_mover.es_final_afd = 0;
@@ -372,7 +357,6 @@ void convertir_afn_a_afd(Estado *inicio_afn, int id_final_afn) {
                     destino_id = existe_idx;
                 }
 
-                // Guardar la transicion de transicion determinista
                 transiciones_afd[contador_transiciones].origen_afd = estados_afd[index_marcar].id_afd;
                 transiciones_afd[contador_transiciones].simbolo = alfabeto[a];
                 transiciones_afd[contador_transiciones].destino_afd = destino_id;
@@ -381,7 +365,6 @@ void convertir_afn_a_afd(Estado *inicio_afn, int id_final_afn) {
         }
     }
 
-    // 3. Imprimir resultados por Consola (Sin tildes)
     printf("\n===================================================\n");
     printf("   RESULTADO DE LA CONVERSION DE AFN A AFD\n");
     printf("===================================================\n");
@@ -401,14 +384,13 @@ void convertir_afn_a_afd(Estado *inicio_afn, int id_final_afn) {
         printf("  U%d --(%c)--> U%d\n", transiciones_afd[i].origen_afd, transiciones_afd[i].simbolo, transiciones_afd[i].destino_afd);
     }
 
-    // Guardar archivo .dot para graficar el AFD
     generar_dot_afd(estados_afd, contador_afd, transiciones_afd, contador_transiciones, "afd_resultado.dot");
 }
 
 int main() {
     char regex[100];
     printf("=== SIMULADOR DE AUTOMATA- ALGORITMO DE THOMPSON ===\n");
-    printf("Ingrese expresion regular: ");
+    printf("Ingrese expresion regular: (para concatenacion no poner . por ej: ab)");
     scanf("%s", regex);
 
     contador_estados = 0;
@@ -419,10 +401,8 @@ int main() {
     printf("Estados AFN creados: %d\n", contador_estados);
     int id_final = seleccionado.fin->id;
 
-    // Procesar conversion de AFN a AFD
     convertir_afn_a_afd(seleccionado.inicio, id_final);
 
-    // Liberacion de recursos
     int visitados_liberar[1000] = {0};
     liberar_automata(seleccionado.inicio, visitados_liberar);
     printf("\nPrograma finalizado correctamente!\n");
